@@ -87,6 +87,7 @@ unsigned long long synchronous_read(char* filename_template, unsigned int size_o
   auto t1 = __rdtsc();
 
   close(fd);
+  std::cout << "SYNC  sumish=" << sumish << std::endl;
 
   return (t1 - t0);
 }
@@ -115,9 +116,6 @@ unsigned long long asynchronous_read(char* filename_template, unsigned int size_
   std::unique_ptr<int[]> buf1(new int[num_elements_in_chunk]); 
   std::unique_ptr<int[]> buf2(new int[num_elements_in_chunk]); 
 
-
-  char bufek[4096];
-
   // Queue with pointers
   // we will have a double buffer here eg.
   // read to one buffer and process another one
@@ -139,16 +137,14 @@ unsigned long long asynchronous_read(char* filename_template, unsigned int size_
     memset(&cb,0,sizeof(cb));    
     cb.aio_fildes = fd;
     cb.aio_lio_opcode = IOCB_CMD_PREAD;
-    cb.aio_buf = (uint64_t)(bufek);
-    //cb.aio_buf = (uint64_t)(buffers[index]);
-    //cb.aio_buf = (__u64)(buffers[index]);
-    //cb.aio_offset = (i+1)*chunk_size;
-    cb.aio_offset = 0;
-    cb.aio_nbytes = 4096;
+    cb.aio_buf = (uint64_t)(buffers[index]);
+    cb.aio_buf = (__u64)(buffers[index]);
+    cb.aio_offset = (i+1)*chunk_size;
+    cb.aio_nbytes = chunk_size;
 
     cbs[0] = &cb;
 
-    ret = syscall(__NR_io_submit, 1, cbs);  
+    ret = syscall(__NR_io_submit, ctx, 1, cbs);  
     if (ret != 1) {
       if(ret < 0) {
         perror("Error: Submission of AIO failed!");
@@ -182,6 +178,8 @@ unsigned long long asynchronous_read(char* filename_template, unsigned int size_
   }
 
   close(fd);
+
+  std::cout << "ASYNC sumish=" << sumish << std::endl;
 
   return (t1 - t0);
 }
