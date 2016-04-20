@@ -12,7 +12,7 @@
 #include <inttypes.h>
 #include <linux/aio_abi.h>
 
-
+#include <cmath>
 //#ifndef __rdtsc
 //unsigned long long __rdtsc()
 //{
@@ -79,7 +79,7 @@ unsigned long long synchronous_read(char* filename_template, unsigned int size_o
     read(fd, bufek.get(), chunk_size);
 
     for(unsigned int j=0; j< num_elements_in_chunk;++j) {
-      sumish += (bufek.get())[j]; 
+      sumish += pow((bufek.get())[j],2) + 3; 
     }
 
   }
@@ -153,7 +153,7 @@ unsigned long long asynchronous_read(char* filename_template, unsigned int size_
     }
 
     for(unsigned int j=0; j< num_elements_in_chunk;++j) {
-      sumish += (buffers[1 - index])[j]; 
+      sumish += pow((buffers[1 - index])[j],2) + 3; 
     }
 
     // Wait to see if data was read
