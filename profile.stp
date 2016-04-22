@@ -3,16 +3,16 @@ global timings[100]
 
 probe process("/home/jczaja/projects/aio-test/build/aio_test").function("*").call
 {
-  timings_start[pp()] = gettimeofday_ms()
+  timings_start[ppfunc()] = gettimeofday_ms()
 }
 
 
 probe process("/home/jczaja/projects/aio-test/build/aio_test").function("*").return
 {
-  timings[pp()] += gettimeofday_ms()  - timings_start[pp()];
+  timings[ppfunc()] += gettimeofday_ms()  - timings_start[ppfunc()];
 }
 
 probe end
 {
-  foreach(x in timings) { printf("%u\n",timings[x])}
+  foreach(x in timings) { printf("%s: %d\n",x,timings[x])}
 }
