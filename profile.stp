@@ -1,17 +1,18 @@
-global delta = 0
+global timings_start[100]
+global timings[100]
 
-probe process("/home/jczaja/projects/aio-test/build/aio_test").function("_Z17asynchronous_readPcjiii").call
+probe process("/home/jczaja/projects/aio-test/build/aio_test").function("*").call
 {
-  delta = get_cycles()
+  timings_start[pp()] = gettimeofday_ms()
 }
 
 
-probe process("/home/jczaja/projects/aio-test/build/aio_test").function("_Z17asynchronous_readPcjiii").return
+probe process("/home/jczaja/projects/aio-test/build/aio_test").function("*").return
 {
-  delta = get_cycles() - delta;
+  timings[pp()] += gettimeofday_ms()  - timings_start[pp()];
 }
 
 probe end
 {
-  printf("Time of execution in cycles: %d\n", delta)
+  foreach(x in timings) { printf("%u\n",timings[x])}
 }
