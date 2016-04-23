@@ -1,6 +1,12 @@
 # aio-test
 Simple Benchmark comparing ASYNC disk read and SYNC ones
 
+# profiling
+To profile time of execution of functions with provided script *profile.stp* you will need
+to have installed System Tap(https://sourceware.org/systemtap/). 
+Heaving it done please run:
+stap ./profile.stp --dyninst -c <path to aio_test executable>
+
 # License
 Copyright (c) 2016, Jacek Czaja
 All rights reserved.
