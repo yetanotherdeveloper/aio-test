@@ -1,6 +1,8 @@
 global timings_start[100]
 global timings[100]
 
+global final_results # Container to combine data from many threads
+
 probe process("/home/jczaja/projects/aio-test/build/aio_test").function("*").call
 {
   timings_start[ppfunc(),tid()] = gettimeofday_ms()
@@ -14,5 +16,12 @@ probe process("/home/jczaja/projects/aio-test/build/aio_test").function("*").ret
 
 probe end
 {
-  foreach([x,tid] in timings-) { printf("%s, TID=%d: %d\n",x,tid,timings[x,tid])}
+  # Get per thread results and put them in final container
+  foreach([x,tid] in timings) 
+  {
+    final_results[x] += timings[x,tid]
+  }
+
+  # Presents results
+  foreach([x] in final_results-) { printf("%s, %d\n",x,final_results[x])}
 }
